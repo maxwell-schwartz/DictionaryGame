@@ -4,6 +4,7 @@ from flask_login import current_user, login_user
 from app import app, db
 from app.forms import LoginForm, EmptyForm, JoinGameForm
 from app.models import User
+from app.util.code import generate_game_code
 
 
 @app.route("/")
@@ -32,7 +33,8 @@ def login():
 def create_game():
     form = EmptyForm()
     if request.method == "POST":
-        return render_template("create_game.html", form=form, code="ABCD")
+        code = generate_game_code(db)
+        return render_template("create_game.html", form=form, code=code)
     return render_template("create_game.html", form=form)
 
 
