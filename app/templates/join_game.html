@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Join Game</h1>
+    <form action="" method="post" novalidate>
+        <p>
+            {{ form.game_code.label }}<br>
+            {{ form.game_code(size=32) }}
+            {% for error in form.game_code.errors %}
+            <span style="color: red;">{{ error }}</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+
+{% endblock %}

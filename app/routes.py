@@ -1,8 +1,8 @@
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import current_user, login_user
 
-from app import app
-from app.forms import LoginForm
+from app import app, db
+from app.forms import LoginForm, EmptyForm, JoinGameForm
 from app.models import User
 
 
@@ -26,3 +26,20 @@ def login():
         login_user(user, remember=form.remember_me.data)
         return redirect(url_for("index"))
     return render_template("login.html", title="Sign in", form=form)
+
+
+@app.route("/new_game", methods=["GET", "POST"])
+def create_game():
+    form = EmptyForm()
+    if request.method == "POST":
+        return render_template("create_game.html", form=form, code="ABCD")
+    return render_template("create_game.html", form=form)
+
+
+@app.route("/join_game", methods=["GET", "POST"])
+def join_game():
+    form = JoinGameForm()
+    if request.method == "POST":
+        flash(f"Joined game {form.game_code.data}")
+        return redirect(url_for("index"))
+    return render_template("join_game.html", form=form)

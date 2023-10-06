@@ -20,6 +20,16 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
+class Game(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    game_master = db.Column(db.Integer, db.ForeignKey("user.id"))
+    game_code = db.Column(db.String(64), index=True, unique=True)
+    round_number = db.Column(db.Integer)
+
+    def __repr__(self):
+        return f"<Game {self.game_code}>"
+
+
 @login.user_loader
 def load_user(id):
     return db.session.query(User).get(int(id))
