@@ -4,7 +4,7 @@ from urllib.parse import urlsplit
 
 from app import app, db
 from app.forms import LoginForm, EmptyForm, JoinGameForm, RegistrationForm
-from app.models import User
+from app.models import User, Game, GameStateEnum
 from app.util.code import generate_game_code
 
 
@@ -45,6 +45,12 @@ def create_game():
     form = EmptyForm()
     if request.method == "POST":
         code = generate_game_code(db)
+        game = Game(game_master=current_user.get_id(), game_code=code, round_number=0, game_state=GameStateEnum(1))
+        user = db.session.query(User).get(current_user.get_id())
+        user.current_game = code
+        db.session.add(game)
+        db.session.add(user)
+        db.session.commit()
         return render_template("create_game.html", form=form, code=code)
     return render_template("create_game.html", form=form)
 

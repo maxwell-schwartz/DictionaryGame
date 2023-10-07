@@ -25,10 +25,10 @@ class User(UserMixin, db.Model):
 
 
 class GameStateEnum(enum.Enum):
-    waiting_for_word = "Waiting For Word"
-    waiting_for_defs = "Waiting For Definitions"
-    waiting_for_votes = "Waiting For Votes"
-    results = "Results"
+    WAITING_FOR_WORD = 1
+    WAITING_FOR_DEFS = 2
+    WAITING_FOR_VOTES = 3
+    RESULTS = 4
 
 
 class Game(db.Model):
