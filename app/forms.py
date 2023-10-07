@@ -16,4 +16,4 @@ class JoinGameForm(FlaskForm):
 
 
 class EmptyForm(FlaskForm):
-    submit = SubmitField('Submit')
+    submit = SubmitField('Create')
