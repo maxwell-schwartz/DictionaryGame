@@ -15,10 +15,10 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password", validators=[DataRequired()])
-    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+    password2 = PasswordField("Repeat Password", validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField("Register")
 
     def validate_username(self, username):
         user = db.session.query(User).filter_by(username=username.data).first()
@@ -36,5 +36,9 @@ class JoinGameForm(FlaskForm):
     submit = SubmitField("Join Game")
 
 
-class EmptyForm(FlaskForm):
-    submit = SubmitField('Create')
+class CreateGameForm(FlaskForm):
+    submit = SubmitField("Create")
+
+
+class StartGameForm(FlaskForm):
+    submit = SubmitField("Start Game")

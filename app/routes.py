@@ -3,7 +3,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 
 from app import app, db
-from app.forms import LoginForm, EmptyForm, JoinGameForm, RegistrationForm
+from app.forms import LoginForm, CreateGameForm, JoinGameForm, RegistrationForm, StartGameForm
 from app.models import User, Game, GameStateEnum
 from app.util.code import generate_game_code
 
@@ -42,16 +42,21 @@ def logout():
 @app.route("/new_game", methods=["GET", "POST"])
 @login_required
 def create_game():
-    form = EmptyForm()
     if request.method == "POST":
-        code = generate_game_code(db)
-        game = Game(game_master=current_user.get_id(), game_code=code, round_number=0, game_state=GameStateEnum(1))
-        user = db.session.query(User).get(current_user.get_id())
-        user.current_game = code
-        db.session.add(game)
-        db.session.add(user)
-        db.session.commit()
-        return render_template("create_game.html", form=form, code=code)
+        form_val = request.form.get("submit")
+        if form_val == "Create":
+            form = StartGameForm()
+            code = generate_game_code(db)
+            game = Game(game_master=current_user.get_id(), game_code=code, round_number=0, game_state=GameStateEnum(1))
+            user = db.session.query(User).get(current_user.get_id())
+            user.current_game = code
+            db.session.add(game)
+            db.session.add(user)
+            db.session.commit()
+            return render_template("create_game.html", form=form, code=code)
+        else:
+            return redirect(url_for("index"))
+    form = CreateGameForm()
     return render_template("create_game.html", form=form)
 
 
