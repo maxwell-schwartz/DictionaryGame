@@ -25,6 +25,7 @@ class User(UserMixin, db.Model):
 
 
 class GameStateEnum(enum.Enum):
+    WAITING_FOR_PLAYERS = 0
     WAITING_FOR_WORD = 1
     WAITING_FOR_DEFS = 2
     WAITING_FOR_VOTES = 3
@@ -34,6 +35,7 @@ class GameStateEnum(enum.Enum):
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     game_master = db.Column(db.Integer, db.ForeignKey("user.id"))
+    players = db.Column(db.Text)
     game_code = db.Column(db.String(64), index=True, unique=True)
     round_number = db.Column(db.Integer)
     game_state = db.Column(Enum(GameStateEnum))

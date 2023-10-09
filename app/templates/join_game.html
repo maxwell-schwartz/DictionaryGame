@@ -2,6 +2,13 @@
 
 {% block content %}
     <h1>Join Game</h1>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
     <form action="" method="post" novalidate>
         <p>
             {{ form.game_code.label }}<br>

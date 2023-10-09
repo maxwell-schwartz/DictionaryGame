@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if user_is_host %}
+        <h1>Game Code: {{ code }}</h1>
+    {% else %}
+        <h1>Waiting Room</h1>
+    {% endif %}
+    <p>Game Host: {{ host }}</p>
+    <p>Players:</p>
+    {% for player in players %}
+        <p>{{ player }}</p>
+    {% endfor %}
+    {% if user_is_host %}
+    <form action="" method="post" novalidate>
+        <p>{{ form.submit() }}</p>
+    </form>
+    {% endif %}
+{% endblock %}
