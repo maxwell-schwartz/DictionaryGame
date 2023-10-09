@@ -42,3 +42,8 @@ class CreateGameForm(FlaskForm):
 
 class StartGameForm(FlaskForm):
     submit = SubmitField("Start Game")
+
+
+class ChooseWordForm(FlaskForm):
+    word_choice = StringField("Enter Word")
+    submit = SubmitField("Enter")

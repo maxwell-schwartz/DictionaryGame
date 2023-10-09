@@ -5,9 +5,9 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 
 from app import app, db
-from app.forms import LoginForm, CreateGameForm, JoinGameForm, RegistrationForm, StartGameForm
-from app.models import User, Game
-from app.util.game_util import create_new_game, join_existing_game
+from app.forms import LoginForm, CreateGameForm, JoinGameForm, RegistrationForm, StartGameForm, ChooseWordForm
+from app.models import User, Game, GameStateEnum
+from app.util.game_util import create_new_game, join_existing_game, get_game_data
 
 
 @app.route("/")
@@ -81,15 +81,27 @@ def register():
 @app.route("/waiting_room/<code>", methods=["GET", "POST"])
 def waiting_room(code):
     form = StartGameForm()
-    game = db.session.query(Game).filter_by(game_code=code).one()
-    host = db.session.query(User).get(game.game_master).username
-    user_is_host = current_user.get_id() == str(game.game_master)
-    players = json.loads(game.players)
+    game_data = get_game_data(current_user.get_id(), code)
+    game = game_data.get("game")
+    if request.method == "POST":
+        game.game_state = GameStateEnum(1)
+        db.session.add(game)
+        db.session.commit()
+        return redirect(url_for("word_choice", code=code))
+    started = game.game_state == GameStateEnum(1)
     return render_template(
         "waiting_room.html",
         code=code,
         form=form,
-        host=host,
-        user_is_host=user_is_host,
-        players=players
+        host=game_data["host"],
+        user_is_host=game_data["user_is_host"],
+        players=game_data["players"],
+        started=started,
     )
+
+
+@app.route("/word_choice/<code>", methods=["GET", "POST"])
+def word_choice(code):
+    form = ChooseWordForm()
+    game_data = get_game_data(current_user.get_id(), code)
+    return render_template("word_choice.html", form=form, user_is_host=game_data["user_is_host"])

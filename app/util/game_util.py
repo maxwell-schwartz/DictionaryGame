@@ -37,3 +37,13 @@ def join_existing_game(user_id, code):
         db.session.add(game)
         db.session.commit()
     return True, None
+
+
+def get_game_data(user_id, code):
+    data = {}
+    game = db.session.query(Game).filter_by(game_code=code).one()
+    data["game"] = game
+    data["host"] = db.session.query(User).get(game.game_master).username
+    data["user_is_host"] = user_id == str(game.game_master)
+    data["players"] = json.loads(game.players)
+    return data
