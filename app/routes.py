@@ -6,8 +6,7 @@ from urllib.parse import urlsplit
 
 from app import app, db
 from app.forms import LoginForm, CreateGameForm, JoinGameForm, RegistrationForm, StartGameForm
-from app.models import User, Game, GameStateEnum
-from app.util.code import generate_game_code
+from app.models import User, Game
 from app.util.game_util import create_new_game, join_existing_game
 
 
@@ -56,9 +55,9 @@ def create_game():
 def join_game():
     form = JoinGameForm()
     if request.method == "POST":
-        joined_game = join_existing_game(current_user.get_id(), form.game_code.data)
+        joined_game, error_message = join_existing_game(current_user.get_id(), form.game_code.data)
         if not joined_game:
-            flash("The game code you entered does not exist.")
+            flash(error_message)
         else:
             return redirect(url_for("waiting_room", code=form.game_code.data))
     return render_template("join_game.html", form=form)

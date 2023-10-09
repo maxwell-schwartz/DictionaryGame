@@ -26,7 +26,9 @@ def create_new_game(user_id):
 def join_existing_game(user_id, code):
     game = db.session.query(Game).filter_by(game_code=code).one_or_none()
     if not game:
-        return False
+        return False, "The game code you entered does not exist."
+    if game.game_state.value != 0:
+        return False, "You cannot join a game already in progress."
     user = db.session.query(User).get(user_id)
     players = json.loads(game.players)
     if user.username not in players:
@@ -34,4 +36,4 @@ def join_existing_game(user_id, code):
         game.players = json.dumps(players)
         db.session.add(game)
         db.session.commit()
-    return True
+    return True, None
