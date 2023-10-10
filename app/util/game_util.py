@@ -11,12 +11,14 @@ def create_new_game(user_id):
     user.current_game = code
     db.session.add(user)
     players = []
+    words = []
     game = Game(
         game_master=user_id,
         players=json.dumps(players),
         game_code=code,
         round_number=0,
         game_state=GameStateEnum(0),
+        words=json.dumps(words)
     )
     db.session.add(game)
     db.session.commit()
@@ -46,4 +48,5 @@ def get_game_data(user_id, code):
     data["host"] = db.session.query(User).get(game.game_master).username
     data["user_is_host"] = user_id == str(game.game_master)
     data["players"] = json.loads(game.players)
+    data["words"] = json.loads(game.words)
     return data

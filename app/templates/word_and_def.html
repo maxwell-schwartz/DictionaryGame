@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% if game_state == 1 %}
     {% if user_is_host %}
         <h1>Choose Your Word</h1>
         <form action="" method="post" novalidate>
@@ -12,5 +13,16 @@
         </form>
     {% else %}
         <h1>The word is being chosen</h1>
+    {% endif %}
+    {% elif game_state == 2 %}
+        <h1>Enter Definition</h1>
+        <h2>{{ word }}</h2>
+        <form action="" method="post" novalidate>
+            <p>
+                {{ form.definition.label }}<br>
+                {{ form.definition() }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
     {% endif %}
 {% endblock %}

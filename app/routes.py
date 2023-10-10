@@ -5,7 +5,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 
 from app import app, db
-from app.forms import LoginForm, CreateGameForm, JoinGameForm, RegistrationForm, StartGameForm, ChooseWordForm
+from app.forms import LoginForm, CreateGameForm, JoinGameForm, RegistrationForm, StartGameForm, ChooseWordForm, \
+    EnterDefForm
 from app.models import User, Game, GameStateEnum
 from app.util.game_util import create_new_game, join_existing_game, get_game_data
 
@@ -87,7 +88,7 @@ def waiting_room(code):
         game.game_state = GameStateEnum(1)
         db.session.add(game)
         db.session.commit()
-        return redirect(url_for("word_choice", code=code))
+        return redirect(url_for("word_and_def", code=code))
     started = game.game_state == GameStateEnum(1)
     return render_template(
         "waiting_room.html",
@@ -100,8 +101,39 @@ def waiting_room(code):
     )
 
 
-@app.route("/word_choice/<code>", methods=["GET", "POST"])
-def word_choice(code):
-    form = ChooseWordForm()
+@app.route("/word_and_def/<code>", methods=["GET", "POST"])
+def word_and_def(code):
     game_data = get_game_data(current_user.get_id(), code)
-    return render_template("word_choice.html", form=form, user_is_host=game_data["user_is_host"])
+    game = game_data.get("game")
+    game_state = game.game_state
+    if request.method == "POST":
+        word_choice = request.form.get("word_choice")
+        if word_choice:
+            words = game_data.get("words")
+            words.append(word_choice)
+            game.words = json.dumps(words)
+            game.game_state = GameStateEnum(2)
+            db.session.add(game)
+            db.session.commit()
+            return redirect(url_for("word_and_def", code=code))
+        else:
+            definition = request.form.get("definition")
+            return f"Definition: {definition}"
+    if game_state == GameStateEnum(1):
+        form = ChooseWordForm()
+        return render_template(
+            "word_and_def.html",
+            form=form,
+            user_is_host=game_data.get("user_is_host"),
+            game_state=game_state.value,
+        )
+    elif game_state == GameStateEnum(2):
+        form = EnterDefForm()
+        return render_template(
+            "word_and_def.html",
+            form=form,
+            user_is_host=game_data.get("user_is_host"),
+            game_state=game_state.value,
+            word=game_data.get("words")[-1],
+        )
+    return "Something went wrong"

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 
 from app import db
@@ -46,4 +46,9 @@ class StartGameForm(FlaskForm):
 
 class ChooseWordForm(FlaskForm):
     word_choice = StringField("Enter Word")
+    submit = SubmitField("Enter")
+
+
+class EnterDefForm(FlaskForm):
+    definition = TextAreaField("Enter Definition", render_kw={"rows": 10, "cols": 50})
     submit = SubmitField("Enter")

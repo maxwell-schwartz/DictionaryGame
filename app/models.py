@@ -39,6 +39,7 @@ class Game(db.Model):
     game_code = db.Column(db.String(64), index=True, unique=True)
     round_number = db.Column(db.Integer)
     game_state = db.Column(Enum(GameStateEnum))
+    words = db.Column(db.Text)
 
     def __repr__(self):
         return f"<Game {self.game_code}>"
